@@ -12,6 +12,7 @@ ScalarConverter::ScalarConverter(const ScalarConverter &other) {
 ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other) {
 	(void)other;
 	std::cout << "Copy assignment operator called" << std::endl;
+	return *this;
 }
 
 bool	isChar(const std::string &input) {
@@ -19,7 +20,7 @@ bool	isChar(const std::string &input) {
 }
 
 bool	isInt(const std::string &input) {
-	int i = 0;
+	size_t i = 0;
 	if(input[i] == '-' || input[i] == '+')
 		i++;
 	while(i < input.length())
@@ -39,8 +40,8 @@ bool	isFloat(const std::string &string)
 	if(string[len] != 'f')
 		return false;
 
-	int			i = 0;
-	bool		hasDot = false;
+	size_t			i = 0;
+	bool			hasDot = false;
 	std::string	num = string.substr(0, len);
 
 	if(num[i] == '-' || num[i] == '+')
@@ -61,8 +62,8 @@ bool	isDouble(const std::string &string)
 	if(string == "-inf" || string == "+inf" || string == "nan")
 		return true;
 
-	int			i = 0;
-	bool		hasDot = false;
+	size_t			i = 0;
+	bool			hasDot = false;
 
 	if(string[i] == '-' || string[i] == '+')
 		i++;
@@ -70,7 +71,7 @@ bool	isDouble(const std::string &string)
 	while(i <= string.length())
 	{
 		if(string[i] == '.' && !hasDot)
-			hasDot == true;
+			hasDot = true;
 		else if(!isdigit(string[i]))
 			return false;
 		i++;
