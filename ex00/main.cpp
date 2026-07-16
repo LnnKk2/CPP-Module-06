@@ -1,5 +1,7 @@
 #include "ScalarConverter.hpp"
 
+#include <iostream>
+
 int main(void)
 {
 	std::cout << "--- CHAR ---" << std::endl;

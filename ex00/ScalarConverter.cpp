@@ -1,5 +1,11 @@
 #include "ScalarConverter.hpp"
 
+#include <iostream>
+#include <limits>
+#include <cmath>
+#include <cstdlib>
+#include <cctype>
+
 ScalarConverter::ScalarConverter() {
 	std::cout << "Constructor called" << std::endl;
 }
@@ -21,8 +27,12 @@ bool	isChar(const std::string &input) {
 
 bool	isInt(const std::string &input) {
 	size_t i = 0;
+	if(input.empty())
+		return false;
 	if(input[i] == '-' || input[i] == '+')
 		i++;
+	if(i == input.length())
+		return false;
 	while(i < input.length())
 	{
 		if(!isdigit(input[i]))
@@ -37,7 +47,7 @@ bool	isFloat(const std::string &string)
 	if(string == "-inff" || string == "+inff" || string == "nanf")
 		return true;
 	int len = string.length() - 1;
-	if(string[len] != 'f')
+	if(len < 0 || string[len] != 'f')
 		return false;
 
 	size_t			i = 0;
@@ -46,7 +56,7 @@ bool	isFloat(const std::string &string)
 
 	if(num[i] == '-' || num[i] == '+')
 		i++;
-	while(i <= num.length())
+	while(i < num.length())
 	{
 		if(num[i] == '.' && !hasDot)
 			hasDot = true;
@@ -68,7 +78,7 @@ bool	isDouble(const std::string &string)
 	if(string[i] == '-' || string[i] == '+')
 		i++;
 
-	while(i <= string.length())
+	while(i < string.length())
 	{
 		if(string[i] == '.' && !hasDot)
 			hasDot = true;
@@ -81,68 +91,63 @@ bool	isDouble(const std::string &string)
 
 void	printChar(double d)
 {
-	if(std::isnan(d) || std::isinf(d))
-		std::cout << "char: impossible" << std::endl;
-	else if(d < 0 || d > 127)
-		std::cout << "char: impossible" << std::endl;
+	std::cout << "char: ";
+	if(std::isnan(d) || std::isinf(d) || d < 0 || d > 127)
+		std::cout << "impossible" << std::endl;
 	else if(!std::isprint(static_cast<int>(d)))
-		std::cout << "char: non printable" << std::endl;
+		std::cout << "Non displayable" << std::endl;
 	else
-		std::cout << "char '" << static_cast<char>(d) << "'" << std::endl;
-}
-
-void	printFloat(float f)
-{
-	if(std::isnan(f))
-		std::cout << "float: nanf" << std::endl;
-	if(std::isinf(f))
-	{
-		if(f < 0 )
-			std::cout << "float: -inff" << std::endl;
-		else
-			std::cout << "float: +inff" << std::endl;
-	}
-		else
-		std::cout << f;
-		if(static_cast<int>(f))
-		{
-			std::cout << ".0";
-			std::cout << "f";
-			std::cout << std::endl;
-		}
-}
-
-void	printDouble(double d)
-{
-	if(std::isnan(d))
-		std::cout << "double: nan" << std::endl;
-	if(std::isinf(d))
-	{
-		if(d < 0)
-			std::cout << "double: -inf" << std::endl;
-		else
-			std::cout << "double: +inf" << std::endl;
-	}
-	else
-	{
-		std::cout << d;
-		if(static_cast<int>(d))
-		{
-			std::cout << ".0";
-			std::cout << std::endl;
-		}
-	}
+		std::cout << "'" << static_cast<char>(d) << "'" << std::endl;
 }
 
 void	printInt(double d)
 {
-	if(std::isinf(d) || std::isnan(d))
-		std::cout << "Int: impossible" << std::endl;
-	if(d > std::numeric_limits<int>::max()
+	std::cout << "int: ";
+	if(std::isnan(d) || std::isinf(d)
+		|| d > std::numeric_limits<int>::max()
 		|| d < std::numeric_limits<int>::min())
-		std::cout << "Int: impossible" << std::endl;
+		std::cout << "impossible" << std::endl;
 	else
-		std::cout << "Int: " << static_cast<int>(d) << std::endl;
+		std::cout << static_cast<int>(d) << std::endl;
+}
+
+void	printFloat(double d)
+{
+	std::cout << "float: ";
+	if(std::isnan(d))
+	{
+		std::cout << "nanf" << std::endl;
+		return ;
+	}
+	if(std::isinf(d))
+	{
+		std::cout << (d < 0 ? "-inff" : "+inff") << std::endl;
+		return ;
+	}
+	float f = static_cast<float>(d);
+	std::cout << f;
+	if(f == std::floor(f))
+		std::cout << ".0";
+	std::cout << "f" << std::endl;
+}
+
+void	printDouble(double d)
+{
+	std::cout << "double: ";
+	if(std::isnan(d))
+	{
+		std::cout << "nan" << std::endl;
+		return ;
+	}
+	if(std::isinf(d))
+	{
+		std::cout << (d < 0 ? "-inf" : "+inf") << std::endl;
+		return ;
+	}
+	std::cout << d;
+	if(d == std::floor(d))
+		std::cout << ".0";
+	std::cout << std::endl;
 }
 
 void ScalarConverter::convert(const std::string &string)
@@ -158,11 +163,16 @@ void ScalarConverter::convert(const std::string &string)
 	else if(isDouble(string))
 		d = strtod(string.c_str(), NULL);
 	else
-		std::cout << "Error: Invalid string" << std::endl;
+	{
+		std::cout << "char: impossible" << std::endl;
+		std::cout << "int: impossible" << std::endl;
+		std::cout << "float: impossible" << std::endl;
+		std::cout << "double: impossible" << std::endl;
+		return ;
+	}
 
 	printChar(d);
-	printDouble(d);
-	printFloat(static_cast<float>(d));
 	printInt(d);
+	printFloat(d);
+	printDouble(d);
 }
-
